@@ -235,4 +235,4 @@ const flowdb = [
   },
 ];
 
-export { db, flowdb };
+module.exports = { db, flowdb };
