@@ -1,5 +1,6 @@
 const express = require("express");
 const routes = express();
+const { getAllUsers, postNewUser } = require("./controllers/usersControllers");
 const {
   getProductList,
   getProductById,
@@ -10,6 +11,9 @@ const {
   getFlowById,
   postNewFlow,
 } = require("./controllers/stockFlowControllers");
+
+routes.get("/users", getAllUsers);
+routes.post("/users/newUser", postNewUser);
 
 routes.get("/products", getProductList);
 routes.get("/products/:id", getProductById);
