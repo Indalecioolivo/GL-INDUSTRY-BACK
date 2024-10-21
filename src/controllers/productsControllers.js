@@ -70,8 +70,6 @@ const patchProduct = async (req, res) => {
       return res.status(304).json(error);
     }
   }
-
-  res.json(name);
 };
 
 module.exports = {
