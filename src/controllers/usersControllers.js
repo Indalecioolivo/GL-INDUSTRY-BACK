@@ -5,7 +5,7 @@ const getAllUsers = async (req, res) => {
     const result = await pool.query("Select * from users");
     return res.status(200).json(result.rows);
   } catch (error) {
-    return res.status(400).json({ message: "Algo deu errado." });
+    return res.status(400).json({ message: "Algo deu errado.", error });
   }
 };
 

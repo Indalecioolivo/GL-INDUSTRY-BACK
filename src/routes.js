@@ -5,6 +5,7 @@ const {
   getProductList,
   getProductById,
   postNewProduct,
+  deleteProduct,
 } = require("./controllers/productsControllers");
 const {
   getFlowList,
@@ -18,6 +19,7 @@ routes.post("/users/newUser", postNewUser);
 routes.get("/products", getProductList);
 routes.get("/products/:id", getProductById);
 routes.post("/products", postNewProduct);
+routes.delete("/products/:id", deleteProduct);
 
 routes.get("/flow", getFlowList);
 routes.get("/flow/:id", getFlowById);

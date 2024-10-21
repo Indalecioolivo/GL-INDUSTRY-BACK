@@ -1,15 +1,23 @@
 const { db } = require("../services/db");
+const pool = require("../conection");
 
 const getProductList = async (req, res) => {
-  return res.json(db);
+  try {
+    const result = await pool.query("select * from products");
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
 };
 
 const getProductById = async (req, res) => {
   const { id } = req.params;
-  const productSearched = db.find((product) => {
-    return product.id == id;
-  });
-  return res.json(productSearched);
+  try {
+    const result = await pool.query(`select * from products where id = ${id}`);
+    return res.json(result.rows);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
 };
 
 const postNewProduct = async (req, res) => {
@@ -23,9 +31,35 @@ const postNewProduct = async (req, res) => {
   if (!volume) {
     return res.status(400).json({ message: "O volume é obrigatório." });
   }
-  const newProduct = { bar_code, name, description, volume, stock, price };
+
+  try {
+    await pool.query(
+      `insert into products
+      (bar_code, name, description, volume, stock, price)
+      values
+      ('${bar_code}', '${name}', '${description}', ${volume}, ${stock}, ${price})
+      `
+    );
+  } catch (error) {
+    return res.status(400).json(error);
+  }
 
   return res.status(201).json({ message: "Produto cadastrado com sucesso" });
 };
 
-module.exports = { getProductList, getProductById, postNewProduct };
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query(`delete from products where id = ${id}`);
+    return res.status(204).json();
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+module.exports = {
+  getProductList,
+  getProductById,
+  postNewProduct,
+  deleteProduct,
+};
