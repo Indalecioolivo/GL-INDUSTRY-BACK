@@ -57,9 +57,27 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const patchProduct = async (req, res) => {
+  const { id } = req.params;
+  const { bar_code, name, description, volume, stock, price } = req.body;
+  if (bar_code && bar_code.length == 13) {
+    try {
+      await pool.query(
+        `update products set bar_code='${bar_code}' where id=${id};`
+      );
+      return res.status(200).send();
+    } catch (error) {
+      return res.status(304).json(error);
+    }
+  }
+
+  res.json(name);
+};
+
 module.exports = {
   getProductList,
   getProductById,
   postNewProduct,
+  patchProduct,
   deleteProduct,
 };
