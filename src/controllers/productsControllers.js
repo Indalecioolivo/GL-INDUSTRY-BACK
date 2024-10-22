@@ -1,4 +1,3 @@
-const { db } = require("../services/db");
 const pool = require("../conection");
 const { PrismaClient } = require("@prisma/client");
 
@@ -14,10 +13,13 @@ const getProductList = async (req, res) => {
 };
 
 const getProductById = async (req, res) => {
-  const { id } = req.params;
+  const id = Number(req.params.id);
   try {
-    const result = await pool.query(`select * from products where id = ${id}`);
-    return res.json(result.rows);
+    const result = await prisma.products.findUnique({ where: { id } });
+    if (result === null) {
+      return res.status(404).json({ message: "Produto não encontrado." });
+    }
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -34,20 +36,25 @@ const postNewProduct = async (req, res) => {
   if (!volume) {
     return res.status(400).json({ message: "O volume é obrigatório." });
   }
-
   try {
-    await pool.query(
-      `insert into products
-      (bar_code, name, description, volume, stock, price)
-      values
-      ('${bar_code}', '${name}', '${description}', ${volume}, ${stock}, ${price})
-      `
-    );
+    await prisma.products.create({
+      data: {
+        ...req.body,
+      },
+    });
+    return res.status(201).json({
+      message: "Produto cadastrado com sucesso",
+    });
   } catch (error) {
+    if (error.code === "P2002") {
+      return res
+        .status(400)
+        .json({
+          message: "Código de barras já foi atribuido à outro produto.",
+        });
+    }
     return res.status(400).json(error);
   }
-
-  return res.status(201).json({ message: "Produto cadastrado com sucesso" });
 };
 
 const deleteProduct = async (req, res) => {
