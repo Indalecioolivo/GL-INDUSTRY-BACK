@@ -1,6 +1,11 @@
 const express = require("express");
 const routes = express();
-const { getAllUsers, postNewUser } = require("./controllers/usersControllers");
+const {
+  getAllUsers,
+  postNewUser,
+  getUserByEmail,
+  deleteUser,
+} = require("./controllers/usersControllers");
 const {
   getProductList,
   getProductById,
@@ -16,6 +21,8 @@ const {
 
 routes.get("/users", getAllUsers);
 routes.post("/users/newUser", postNewUser);
+routes.get("/users/findUser/:email/:password", getUserByEmail);
+routes.delete("/users/:email", deleteUser);
 
 routes.get("/products", getProductList);
 routes.get("/products/:id", getProductById);
