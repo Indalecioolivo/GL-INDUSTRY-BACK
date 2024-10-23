@@ -47,38 +47,47 @@ const postNewProduct = async (req, res) => {
     });
   } catch (error) {
     if (error.code === "P2002") {
-      return res
-        .status(400)
-        .json({
-          message: "Código de barras já foi atribuido à outro produto.",
-        });
+      return res.status(400).json({
+        message: "Código de barras já foi atribuido à outro produto.",
+      });
+    }
+    return res.status(400).json(error);
+  }
+};
+
+const patchProduct = async (req, res) => {
+  const id = Number(req.params.id);
+  const { bar_code, name, description, volume, stock, price } = req.body;
+  if (bar_code && bar_code.length != 13) {
+    return res.status(400).json({ message: "Código de barras inválido." });
+  }
+  try {
+    const result = await prisma.products.update({
+      where: { id },
+      data: { ...req.body },
+    });
+    return res.status(200).send(result);
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(400).json({ message: "Produto Inexistente." });
     }
     return res.status(400).json(error);
   }
 };
 
 const deleteProduct = async (req, res) => {
-  const { id } = req.params;
+  const id = Number(req.params.id);
   try {
-    await pool.query(`delete from products where id = ${id}`);
+    await prisma.products.delete({
+      where: {
+        id,
+      },
+    });
     return res.status(204).json();
   } catch (error) {
-    res.status(400).json(error);
-  }
-};
+    console.log(error);
 
-const patchProduct = async (req, res) => {
-  const { id } = req.params;
-  const { bar_code, name, description, volume, stock, price } = req.body;
-  if (bar_code && bar_code.length == 13) {
-    try {
-      await pool.query(
-        `update products set bar_code='${bar_code}' where id=${id};`
-      );
-      return res.status(200).send();
-    } catch (error) {
-      return res.status(304).json(error);
-    }
+    res.status(400).json(error);
   }
 };
 
