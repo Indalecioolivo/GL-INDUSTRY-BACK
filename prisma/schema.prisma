@@ -37,6 +37,6 @@ model Flow {
   type String
   amount Int
   date DateTime @default(now())
-  barcode Products @relation(fields: [product_bar_code], references: [bar_code])
+  barcode Products @relation(fields: [product_bar_code], references: [bar_code], onDelete: Cascade)
   product_bar_code String 
 }

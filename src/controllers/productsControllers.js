@@ -77,11 +77,8 @@ const patchProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   const id = Number(req.params.id);
   try {
-    await prisma.products.delete({
-      where: {
-        id,
-      },
-    });
+    await prisma.products.delete({ where: { id } });
+
     return res.status(204).json();
   } catch (error) {
     console.log(error);
