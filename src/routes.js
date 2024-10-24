@@ -5,6 +5,7 @@ const {
   postNewUser,
   getUserByEmail,
   deleteUser,
+  postLogin,
 } = require("./controllers/usersControllers");
 const {
   getProductList,
@@ -24,6 +25,7 @@ routes.get("/users", getAllUsers);
 routes.post("/users/newUser", postNewUser);
 routes.get("/users/findUser/:email/:password", getUserByEmail);
 routes.delete("/users/:email", deleteUser);
+routes.post("/login", postLogin);
 
 routes.get("/products", getProductList);
 routes.get("/products/:id", getProductById);

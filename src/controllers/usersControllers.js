@@ -65,4 +65,28 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, postNewUser, getUserByEmail, deleteUser };
+const postLogin = async (req, res) => {
+  const { userEmail, userPassword } = req.body.credentials;
+  try {
+    const dataUser = await prisma.users.findUnique({
+      where: { email: userEmail },
+    });
+    if (dataUser.email === userEmail && dataUser.password === userPassword) {
+      return res.status(200).json({ token: "esse-é-o-conteúdo-do-token" });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Usuário e/ou Senha incorretos." });
+    }
+  } catch (error) {
+    return res.status(400).send();
+  }
+};
+
+module.exports = {
+  getAllUsers,
+  postNewUser,
+  getUserByEmail,
+  deleteUser,
+  postLogin,
+};
