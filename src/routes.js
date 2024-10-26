@@ -23,7 +23,7 @@ const {
 
 routes.get("/users", getAllUsers);
 routes.post("/users/newUser", postNewUser);
-routes.get("/users/findUser/:email/:password", getUserByEmail);
+routes.get("/users/findUser/:email", getUserByEmail);
 routes.delete("/users/:email", deleteUser);
 routes.post("/login", postLogin);
 

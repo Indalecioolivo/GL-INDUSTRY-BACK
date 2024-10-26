@@ -11,16 +11,22 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUserByEmail = async (req, res) => {
-  const { email, password } = req.params;
-
+  const { email } = req.params;
+  let dataUser = {};
   try {
     const result = await prisma.users.findUnique({
-      where: { email, password },
+      where: { email },
     });
     if (result === null) {
       return res.status(404).json({ error: "Credenciais Incorretas." });
     }
-    return res.status(204).send();
+    dataUser = {
+      id: result.id,
+      email: result.email,
+      name: result.name,
+      last_name: result.last_name,
+    };
+    return res.status(200).json(dataUser);
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -71,8 +77,11 @@ const postLogin = async (req, res) => {
     const dataUser = await prisma.users.findUnique({
       where: { email: userEmail },
     });
+    const { id, name, last_name } = dataUser;
     if (dataUser.email === userEmail && dataUser.password === userPassword) {
-      return res.status(200).json({ token: "esse-é-o-conteúdo-do-token" });
+      return res
+        .status(200)
+        .json({ token: "esse-é-o-conteúdo-do-token", id, name, last_name });
     } else {
       return res
         .status(404)
