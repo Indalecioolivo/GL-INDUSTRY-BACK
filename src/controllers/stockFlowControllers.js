@@ -4,9 +4,16 @@ const prisma = new PrismaClient();
 const getFlowList = async (req, res) => {
   try {
     const result = await prisma.flow.findMany();
-    res.status(200).json(result);
+    let processedData = [];
+    result.forEach((flow) => {
+      let date = `${flow.date.getDate()}/${
+        flow.date.getMonth() + 1
+      }/${flow.date.getFullYear()}`;
+      return processedData.push({ ...flow, date });
+    });
+    return res.status(200).json(processedData);
   } catch (error) {
-    res.status(400).json(error);
+    return res.status(400).json(error);
   }
 };
 
@@ -14,10 +21,10 @@ const getFlowById = async (req, res) => {
   const id = Number(req.params.id);
   try {
     const result = await prisma.flow.findUnique({ where: { id } });
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (error) {
     console.log(error);
-    res.status(400).json(error);
+    return res.status(400).json(error);
   }
 };
 
@@ -52,8 +59,13 @@ const postNewFlow = async (req, res) => {
       .status(201)
       .json({ message: "Fluxo criado com sucesso.", result });
   } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
+    // console.log(error);
+    if (error.code == "P2025") {
+      return res.status(400).json({
+        message: "O Código de barras não pertence a nenhum produto registrado.",
+      });
+    }
+    return res.status(400).json(error);
   }
 };
 
