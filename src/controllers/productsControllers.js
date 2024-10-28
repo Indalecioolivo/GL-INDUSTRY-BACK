@@ -26,6 +26,7 @@ const getProductById = async (req, res) => {
 
 const postNewProduct = async (req, res) => {
   const { bar_code, name, description, volume, stock, price } = req.body;
+
   if (!bar_code || bar_code.length != 13) {
     return res.status(400).json({ message: "Código de barras inválido." });
   }
@@ -50,6 +51,7 @@ const postNewProduct = async (req, res) => {
         message: "Código de barras já foi atribuido à outro produto.",
       });
     }
+
     return res.status(400).json(error);
   }
 };
