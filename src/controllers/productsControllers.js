@@ -58,20 +58,23 @@ const postNewProduct = async (req, res) => {
 
 const patchProduct = async (req, res) => {
   const id = Number(req.params.id);
-  const { bar_code, name, description, volume, stock, price } = req.body;
+  let { bar_code, name, description, price, volume } = req.body;
+  volume = Number(volume);
+  price = Number(price);
   if (bar_code && bar_code.length != 13) {
     return res.status(400).json({ message: "Código de barras inválido." });
   }
   try {
     const result = await prisma.products.update({
       where: { id },
-      data: { ...req.body },
+      data: { bar_code, name, description, price, volume },
     });
-    return res.status(200).send(result);
+    return res.status(200).json({ message: "Produto Editado com Sucesso." });
   } catch (error) {
     if (error.code === "P2025") {
       return res.status(400).json({ message: "Produto Inexistente." });
     }
+
     return res.status(400).json(error);
   }
 };
@@ -83,9 +86,7 @@ const deleteProduct = async (req, res) => {
 
     return res.status(204).json();
   } catch (error) {
-    console.log(error);
-
-    res.status(400).json(error);
+    return res.status(400).json(error);
   }
 };
 
