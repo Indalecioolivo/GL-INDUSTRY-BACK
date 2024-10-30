@@ -19,6 +19,7 @@ const {
   getFlowById,
   postNewFlow,
   deleteFlowById,
+  patchFlowById,
 } = require("./controllers/stockFlowControllers");
 
 routes.get("/users", getAllUsers);
@@ -36,6 +37,7 @@ routes.delete("/products/:id", deleteProduct);
 routes.get("/flows", getFlowList);
 routes.get("/flows/:id", getFlowById);
 routes.post("/flows", postNewFlow);
+routes.patch("/flows/:id", patchFlowById);
 routes.delete("/flows/:id", deleteFlowById);
 
 module.exports = routes;

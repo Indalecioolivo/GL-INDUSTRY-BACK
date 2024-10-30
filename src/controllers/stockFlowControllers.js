@@ -94,4 +94,27 @@ const deleteFlowById = async (req, res) => {
   }
 };
 
-module.exports = { getFlowList, getFlowById, postNewFlow, deleteFlowById };
+const patchFlowById = async (req, res) => {
+  let { id } = req.params;
+  let { type, amount, bar_code } = req.body;
+  id = Number(id);
+
+  try {
+    await prisma.flow.update({
+      where: { id },
+      data: { type, amount, product_bar_code: bar_code },
+    });
+
+    return res.status(200).json({ message: "Produto Editado com Sucesso." });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  getFlowList,
+  getFlowById,
+  postNewFlow,
+  deleteFlowById,
+  patchFlowById,
+};
