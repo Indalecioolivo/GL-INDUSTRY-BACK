@@ -86,8 +86,8 @@ const deleteFlowById = async (req, res) => {
         data: { stock: { increment: amount } },
       });
     }
-    const result = await prisma.flow.delete({ where: { id } });
-    return res.status(200).json(result);
+    await prisma.flow.delete({ where: { id } });
+    return res.status(200).json({ message: "Produto Excluido com Sucesso." });
   } catch (error) {
     console.log(error);
     return res.status(400).json(error);
@@ -130,7 +130,7 @@ const patchFlowById = async (req, res) => {
       data: { type, amount, product_bar_code: bar_code },
     });
 
-    return res.status(200).json({ message: "Produto Editado com Sucesso." });
+    return res.status(200).json({ message: "Fluxo Editado com Sucesso." });
   } catch (error) {
     console.log(error);
   }
