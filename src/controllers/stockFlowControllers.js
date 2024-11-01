@@ -100,6 +100,31 @@ const patchFlowById = async (req, res) => {
   id = Number(id);
 
   try {
+    const attAmount = await prisma.flow.findUnique({
+      where: { id },
+    });
+    if (attAmount.type === "Produção") {
+      await prisma.products.update({
+        where: { bar_code },
+        data: { stock: { decrement: attAmount.amount } },
+      });
+    } else {
+      await prisma.products.update({
+        where: { bar_code },
+        data: { stock: { increment: attAmount.amount } },
+      });
+    }
+    if (type === "Produção") {
+      await prisma.products.update({
+        where: { bar_code },
+        data: { stock: { increment: amount } },
+      });
+    } else {
+      await prisma.products.update({
+        where: { bar_code },
+        data: { stock: { decrement: amount } },
+      });
+    }
     await prisma.flow.update({
       where: { id },
       data: { type, amount, product_bar_code: bar_code },
