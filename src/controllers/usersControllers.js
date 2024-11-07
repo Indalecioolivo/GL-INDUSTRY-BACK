@@ -1,5 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const getAllUsers = async (req, res) => {
   try {
@@ -33,7 +35,7 @@ const getUserByEmail = async (req, res) => {
 };
 
 const postNewUser = async (req, res) => {
-  const { email, password, name, last_name } = req.body;
+  let { email, password, name, last_name } = req.body;
   if (!email) {
     return res.status(400).json({ message: "O email é obrigatório." });
   }
@@ -46,6 +48,8 @@ const postNewUser = async (req, res) => {
   if (!last_name) {
     return res.status(400).json({ message: "O last_name é obrigatório." });
   }
+
+  password = await bcrypt.hash(password, 10);
 
   try {
     await prisma.users.create({
@@ -78,7 +82,10 @@ const postLogin = async (req, res) => {
       where: { email: userEmail },
     });
     const { id, name, last_name } = dataUser;
-    if (dataUser.email === userEmail && dataUser.password === userPassword) {
+
+    const validPass = await bcrypt.compare(userPassword, dataUser.password);
+
+    if (dataUser.email === userEmail && validPass) {
       return res
         .status(200)
         .json({ token: "esse-é-o-conteúdo-do-token", id, name, last_name });
@@ -88,7 +95,7 @@ const postLogin = async (req, res) => {
         .json({ message: "Usuário e/ou Senha incorretos." });
     }
   } catch (error) {
-    return res.status(400).send();
+    return res.status(400).send({ message: "Usuário e/ou Senha incorretos." });
   }
 };
 
