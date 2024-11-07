@@ -21,6 +21,7 @@ const {
   deleteFlowById,
   patchFlowById,
 } = require("./controllers/stockFlowControllers");
+const { autenticationUser } = require("./middleware/autentication");
 
 routes.get("/users", getAllUsers);
 routes.post("/users/newUser", postNewUser);
@@ -28,6 +29,7 @@ routes.get("/users/findUser/:email", getUserByEmail);
 routes.delete("/users/:email", deleteUser);
 routes.post("/login", postLogin);
 
+routes.use(autenticationUser);
 routes.get("/products", getProductList);
 routes.get("/products/:id", getProductById);
 routes.post("/products", postNewProduct);

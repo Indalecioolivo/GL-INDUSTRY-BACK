@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const jwtPass = require("../jwtPass");
 
 const getAllUsers = async (req, res) => {
   try {
@@ -86,9 +87,8 @@ const postLogin = async (req, res) => {
     const validPass = await bcrypt.compare(userPassword, dataUser.password);
 
     if (dataUser.email === userEmail && validPass) {
-      return res
-        .status(200)
-        .json({ token: "esse-é-o-conteúdo-do-token", id, name, last_name });
+      const token = jwt.sign({ id }, jwtPass, { expiresIn: "8h" });
+      return res.status(200).json({ token, id, name, last_name });
     } else {
       return res
         .status(404)
