@@ -7,7 +7,6 @@ const autenticationUser = async (req, res, next) => {
     return res.status(401).json({ message: "Non authorized" });
   }
   const token = authorization.split(" ")[1];
-
   try {
     const tokenUser = await jwt.verify(token, jwtPass);
     next();
