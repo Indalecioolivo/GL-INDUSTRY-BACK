@@ -11,6 +11,20 @@ const getAllRawMaterials = async (req, res) => {
   }
 };
 
+const getRawMaterialByBarCode = async (req, res) => {
+  const { bar_code } = req.params;
+  if (!validateBarCode(bar_code)) {
+    return res.status(404).json({ message: "Código de barras inválido." });
+  }
+  try {
+    const result = await prisma.rawMaterial.findUnique({ where: { bar_code } });
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    return res.json(error);
+  }
+};
+
 const postNewRawMaterial = async (req, res) => {
   const { bar_code, name, stock } = req.body;
   const barCodeValid = validateBarCode(bar_code);
@@ -32,9 +46,12 @@ const postNewRawMaterial = async (req, res) => {
         message: "Código de barras já foi atribuido à outro produto.",
       });
     }
-
     return res.status(400).json(error);
   }
 };
 
-module.exports = { getAllRawMaterials, postNewRawMaterial };
+module.exports = {
+  getAllRawMaterials,
+  postNewRawMaterial,
+  getRawMaterialByBarCode,
+};
