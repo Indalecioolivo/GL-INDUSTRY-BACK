@@ -50,8 +50,21 @@ const postNewRawMaterial = async (req, res) => {
   }
 };
 
+const deleteRawMaterial = async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    await prisma.rawMaterial.delete({ where: { id } });
+    return res
+      .status(200)
+      .json({ message: "Matéria prima deletada com sucesso." });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   getAllRawMaterials,
   postNewRawMaterial,
   getRawMaterialByBarCode,
+  deleteRawMaterial,
 };
