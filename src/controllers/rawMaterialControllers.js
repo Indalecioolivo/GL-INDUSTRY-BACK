@@ -27,12 +27,10 @@ const getRawMaterialByBarCode = async (req, res) => {
 
 const postNewRawMaterial = async (req, res) => {
   const { bar_code, name, stock } = req.body;
-  const barCodeValid = validateBarCode(bar_code);
-  const nameValid = validateName(name);
-  if (!barCodeValid) {
+  if (!validateBarCode(bar_code)) {
     return res.status(404).json({ message: "Código de Barras Inválido." });
   }
-  if (!nameValid) {
+  if (!validateName(name)) {
     return res.status(404).json({ message: "Nome é Obrigatório." });
   }
   try {
@@ -50,6 +48,29 @@ const postNewRawMaterial = async (req, res) => {
   }
 };
 
+const patchRawMaterial = async (req, res) => {
+  const { bar_code, name } = req.body;
+  const id = Number(req.params.id);
+  if (!validateBarCode(bar_code)) {
+    return res.status(400).json({ message: "Código de Barras Inválido." });
+  }
+  if (!validateName(name)) {
+    return res.status(400).json({ message: "Nome é Obrigatório." });
+  }
+  try {
+    await prisma.rawMaterial.update({
+      where: { id },
+      data: { bar_code, name },
+    });
+    return res
+      .status(200)
+      .json({ message: "Matéria prima editada com sucesso." });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+};
+
 const deleteRawMaterial = async (req, res) => {
   const id = Number(req.params.id);
   try {
@@ -59,6 +80,7 @@ const deleteRawMaterial = async (req, res) => {
       .json({ message: "Matéria prima deletada com sucesso." });
   } catch (error) {
     console.log(error);
+    return res.status(400).json(error);
   }
 };
 
@@ -67,4 +89,5 @@ module.exports = {
   postNewRawMaterial,
   getRawMaterialByBarCode,
   deleteRawMaterial,
+  patchRawMaterial,
 };
