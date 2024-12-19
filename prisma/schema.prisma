@@ -40,3 +40,20 @@ model Flow {
   barcode Products @relation(fields: [product_bar_code], references: [bar_code], onDelete: Cascade)
   product_bar_code String 
 }
+
+model RawMaterial {
+  id Int @id @default(autoincrement())
+  bar_code String @unique
+  name String
+  stock Int?
+  flow FlowRawMaterial[]
+}
+
+model FlowRawMaterial {
+  id Int @id @default(autoincrement())
+  type String
+  amount Float
+  date DateTime @default(now())
+  barcode RawMaterial @relation(fields: [rawMaterial_bar_code], references: [bar_code], onDelete: Cascade)
+  rawMaterial_bar_code String
+}
