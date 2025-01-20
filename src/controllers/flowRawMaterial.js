@@ -12,13 +12,18 @@ const getFlowRawMaterialList = async (req, res) => {
 
 const getFlowByBarCode = async (req, res) => {
   const { bar_code } = req.params;
+  if (bar_code.length != 13) {
+    return res.status(400).json({ message: "Código de barras inválido." });
+  }
   try {
     const result = await prisma.flowRawMaterial.findMany({
       where: { rawMaterial_bar_code: bar_code },
     });
 
-    res.status(200).json({ message: "TD OK", result });
-  } catch (error) {}
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 
 const postNewFlowRawMaterial = async (req, res) => {
@@ -60,8 +65,35 @@ const postNewFlowRawMaterial = async (req, res) => {
   }
 };
 
+const deleteFlowRawMaterial = async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    const { type, rawMaterial_bar_code, amount } =
+      await prisma.flowRawMaterial.findUnique({ where: { id } });
+
+    if (type === "Produção") {
+      await prisma.rawMaterial.update({
+        where: { bar_code: rawMaterial_bar_code },
+        data: { stock: { decrement: amount } },
+      });
+    } else {
+      await prisma.rawMaterial.update({
+        where: { bar_code: rawMaterial_bar_code },
+        data: { stock: { increment: amount } },
+      });
+    }
+    await prisma.flowRawMaterial.delete({ where: { id } });
+    return res.status(200).json({ message: "Produto Excluído com Sucesso." });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400).json(error);
+  }
+};
+
 module.exports = {
   getFlowRawMaterialList,
   getFlowByBarCode,
   postNewFlowRawMaterial,
+  deleteFlowRawMaterial,
 };
