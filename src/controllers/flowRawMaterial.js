@@ -65,6 +65,45 @@ const postNewFlowRawMaterial = async (req, res) => {
   }
 };
 
+const patchFlowRawMaterial = async (req, res) => {
+  const id = Number(req.params.id);
+  let { type, amount, bar_code } = req.body;
+  try {
+    const oldFlow = await prisma.flowRawMaterial.findUnique({ where: { id } });
+    console.log(oldFlow.rawMaterial_bar_code);
+
+    if (oldFlow.type === "Produção") {
+      await prisma.rawMaterial.update({
+        where: { bar_code: oldFlow.rawMaterial_bar_code },
+        data: { stock: { decrement: oldFlow.amount } },
+      });
+    } else {
+      await prisma.rawMaterial.update({
+        where: { bar_code: oldFlow.rawMaterial_bar_code },
+        data: { stock: { increment: oldFlow.amount } },
+      });
+    }
+    if (type === "Produção") {
+      await prisma.rawMaterial.update({
+        where: { bar_code },
+        data: { stock: { increment: amount } },
+      });
+    } else {
+      await prisma.rawMaterial.update({
+        where: { bar_code },
+        data: { stock: { decrement: amount } },
+      });
+    }
+    await prisma.flowRawMaterial.update({
+      where: { id },
+      data: { type, amount, rawMaterial_bar_code: bar_code },
+    });
+    return res.status(200).json({ message: "Fluxo Editado com Sucesso." });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const deleteFlowRawMaterial = async (req, res) => {
   const id = Number(req.params.id);
   try {
@@ -95,5 +134,6 @@ module.exports = {
   getFlowRawMaterialList,
   getFlowByBarCode,
   postNewFlowRawMaterial,
+  patchFlowRawMaterial,
   deleteFlowRawMaterial,
 };

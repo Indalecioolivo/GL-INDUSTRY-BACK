@@ -32,6 +32,7 @@ const {
   getFlowRawMaterialList,
   getFlowByBarCode,
   postNewFlowRawMaterial,
+  patchFlowRawMaterial,
   deleteFlowRawMaterial,
 } = require("./controllers/flowRawMaterial");
 
@@ -65,6 +66,7 @@ routes.delete("/raw-materials/:id", deleteRawMaterial);
 routes.get("/flows-raw-materials", getFlowRawMaterialList);
 routes.get("/flows-raw-materials/:bar_code", getFlowByBarCode);
 routes.post("/flows-raw-materials", postNewFlowRawMaterial);
+routes.patch("/flows-raw-materials/:id", patchFlowRawMaterial);
 routes.delete("/flows-raw-materials/:id", deleteFlowRawMaterial);
 
 module.exports = routes;
