@@ -1,0 +1,67 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+const getFlowRawMaterialList = async (req, res) => {
+  try {
+    const result = await prisma.flowRawMaterial.findMany();
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+const getFlowByBarCode = async (req, res) => {
+  const { bar_code } = req.params;
+  try {
+    const result = await prisma.flowRawMaterial.findMany({
+      where: { rawMaterial_bar_code: bar_code },
+    });
+
+    res.status(200).json({ message: "TD OK", result });
+  } catch (error) {}
+};
+
+const postNewFlowRawMaterial = async (req, res) => {
+  const { type, amount, bar_code } = req.body;
+  if (!type) {
+    return res.status(400).json({ message: "O tipo de fluxo é obrigatório." });
+  }
+  if (!amount) {
+    return res.status(400).json({ message: "A quantidade é obrigatória." });
+  }
+  if (!bar_code || bar_code.length != 13) {
+    return res.status(400).json({ message: "Código de barras inválido." });
+  }
+  try {
+    if (type === "Produção") {
+      await prisma.rawMaterial.update({
+        where: { bar_code },
+        data: { stock: { increment: amount } },
+      });
+    } else {
+      await prisma.rawMaterial.update({
+        where: { bar_code },
+        data: { stock: { decrement: amount } },
+      });
+    }
+    const result = await prisma.flowRawMaterial.create({
+      data: { type, amount, rawMaterial_bar_code: bar_code },
+    });
+    return res
+      .status(201)
+      .json({ message: "Fluxo criado com sucesso.", result });
+  } catch (error) {
+    if (error.code == "P2025") {
+      return res.status(400).json({
+        message: "O Código de barras não pertence a nenhum produto registrado.",
+      });
+    }
+    return res.status(400).json(error);
+  }
+};
+
+module.exports = {
+  getFlowRawMaterialList,
+  getFlowByBarCode,
+  postNewFlowRawMaterial,
+};

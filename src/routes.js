@@ -28,6 +28,11 @@ const {
   patchRawMaterial,
   deleteRawMaterial,
 } = require("./controllers/rawMaterialControllers");
+const {
+  getFlowRawMaterialList,
+  getFlowByBarCode,
+  postNewFlowRawMaterial,
+} = require("./controllers/flowRawMaterial");
 
 const { autenticationUser } = require("./middleware/autentication");
 
@@ -55,5 +60,9 @@ routes.get("/raw-materials/:bar_code", getRawMaterialByBarCode);
 routes.post("/raw-materials", postNewRawMaterial);
 routes.patch("/raw-materials/:id", patchRawMaterial);
 routes.delete("/raw-materials/:id", deleteRawMaterial);
+
+routes.get("/flows-raw-materials", getFlowRawMaterialList);
+routes.get("/flows-raw-materials/:bar_code", getFlowByBarCode);
+routes.post("/flows-raw-materials", postNewFlowRawMaterial);
 
 module.exports = routes;
