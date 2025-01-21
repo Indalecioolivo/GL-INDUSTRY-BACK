@@ -87,7 +87,7 @@ const deleteFlowById = async (req, res) => {
       });
     }
     await prisma.flow.delete({ where: { id } });
-    return res.status(200).json({ message: "Produto Excluido com Sucesso." });
+    return res.status(200).json({ message: "Fluxo Excluido com Sucesso." });
   } catch (error) {
     console.log(error);
     return res.status(400).json(error);
