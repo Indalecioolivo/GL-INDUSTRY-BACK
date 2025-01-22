@@ -75,9 +75,12 @@ const postNewFlowRawMaterial = async (req, res) => {
 const patchFlowRawMaterial = async (req, res) => {
   const id = Number(req.params.id);
   let { type, amount, bar_code } = req.body;
+  amount = Number(amount);
+  if (!bar_code || bar_code.length != 13) {
+    return res.status(400).json({ message: "Código de Barras Inválido" });
+  }
   try {
     const oldFlow = await prisma.flowRawMaterial.findUnique({ where: { id } });
-    console.log(oldFlow.rawMaterial_bar_code);
 
     if (oldFlow.type === "Produção") {
       await prisma.rawMaterial.update({
