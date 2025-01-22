@@ -4,7 +4,14 @@ const prisma = new PrismaClient();
 const getFlowRawMaterialList = async (req, res) => {
   try {
     const result = await prisma.flowRawMaterial.findMany();
-    return res.status(200).json(result);
+    let processedData = [];
+    result.forEach((flow) => {
+      let date = `${flow.date.getDate()}/${
+        flow.date.getMonth() + 1
+      }/${flow.date.getFullYear()}`;
+      return processedData.push({ ...flow, date });
+    });
+    return res.status(200).json(processedData);
   } catch (error) {
     return res.status(400).json(error);
   }
