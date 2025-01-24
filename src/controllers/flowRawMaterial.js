@@ -4,7 +4,14 @@ const prisma = new PrismaClient();
 const getFlowRawMaterialList = async (req, res) => {
   try {
     const result = await prisma.flowRawMaterial.findMany();
-    return res.status(200).json(result);
+    let processedData = [];
+    result.forEach((flow) => {
+      let date = `${flow.date.getDate()}/${
+        flow.date.getMonth() + 1
+      }/${flow.date.getFullYear()}`;
+      return processedData.push({ ...flow, date });
+    });
+    return res.status(200).json(processedData);
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -68,9 +75,12 @@ const postNewFlowRawMaterial = async (req, res) => {
 const patchFlowRawMaterial = async (req, res) => {
   const id = Number(req.params.id);
   let { type, amount, bar_code } = req.body;
+  amount = Number(amount);
+  if (!bar_code || bar_code.length != 13) {
+    return res.status(400).json({ message: "Código de Barras Inválido" });
+  }
   try {
     const oldFlow = await prisma.flowRawMaterial.findUnique({ where: { id } });
-    console.log(oldFlow.rawMaterial_bar_code);
 
     if (oldFlow.type === "Produção") {
       await prisma.rawMaterial.update({
